@@ -2,13 +2,13 @@
 #include<GL/glut.h>
 #include<math.h>
 
-int x_start, y_start, x_end, y_end;
-float angle;
+int x_start,y_start,x_end,y_end;
+int tx,ty;
 
-void drawPixel(int x, int y)
+void drawPixel(int x,int y)
 {
     glBegin(GL_POINTS);
-    glVertex2i(x, y);
+    glVertex2i(x,y);
     glEnd();
 }
 
@@ -17,8 +17,7 @@ void drawGrid()
     glColor3f(0.85,0.85,0.85);
 
     glBegin(GL_LINES);
-
-    for(int i=-50;i<=50;i++)   // finer grid
+    for(int i=-50;i<=50;i++)
     {
         glVertex2f(i,-50);
         glVertex2f(i,50);
@@ -26,23 +25,19 @@ void drawGrid()
         glVertex2f(-50,i);
         glVertex2f(50,i);
     }
-
     glEnd();
 }
 
 void drawAxes()
 {
     glColor3f(0,0,0);
-    glLineWidth(2);
 
     glBegin(GL_LINES);
-
     glVertex2f(-50,0);
     glVertex2f(50,0);
 
     glVertex2f(0,-50);
     glVertex2f(0,50);
-
     glEnd();
 }
 
@@ -56,8 +51,7 @@ void drawDDA(float x1,float y1,float x2,float y2)
     float x_inc=dx/steps;
     float y_inc=dy/steps;
 
-    float x=x1;
-    float y=y1;
+    float x=x1,y=y1;
 
     for(int i=0;i<=steps;i++)
     {
@@ -74,20 +68,12 @@ void display()
     drawGrid();
     drawAxes();
 
-    // Original line
     glColor3f(1,0,0);
     drawDDA(x_start,y_start,x_end,y_end);
 
-    // Rotated coordinates
-    float x1r = x_start*cos(angle) - y_start*sin(angle);
-    float y1r = x_start*sin(angle) + y_start*cos(angle);
-
-    float x2r = x_end*cos(angle) - y_end*sin(angle);
-    float y2r = x_end*sin(angle) + y_end*cos(angle);
-
-    // Rotated line
     glColor3f(0,0,1);
-    drawDDA(x1r,y1r,x2r,y2r);
+    drawDDA(x_start+tx,y_start+ty,
+            x_end+tx,y_end+ty);
 
     glFlush();
 }
@@ -95,9 +81,7 @@ void display()
 void init()
 {
     glClearColor(1,1,1,1);
-
-    glPointSize(4);   // bigger pixels for clarity
-
+    glPointSize(4);
     gluOrtho2D(-50,50,-50,50);
 }
 
@@ -105,32 +89,26 @@ int main(int argc,char**argv)
 {
     int ws;
 
-    glutInit(&argc,argv);
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-
     printf("Enter x1 y1: ");
-    scanf("%d %d",&x_start,&y_start);
+    scanf("%d%d",&x_start,&y_start);
 
     printf("Enter x2 y2: ");
-    scanf("%d %d",&x_end,&y_end);
+    scanf("%d%d",&x_end,&y_end);
 
-    printf("Enter rotation angle: ");
-    scanf("%f",&angle);
+    printf("Enter translation tx ty: ");
+    scanf("%d%d",&tx,&ty);
 
-    angle = angle * (M_PI/180);
-
-    printf("Enter window size (square window recommended, e.g., 700): ");
+    printf("Enter window size: ");
     scanf("%d",&ws);
 
-    glutInitWindowSize(ws,ws);   // square window
+    glutInit(&argc,argv);
+    glutInitDisplayMode(GLUT_SINGLE|GLUT_RGB);
+    glutInitWindowSize(ws,ws);
 
-    glutCreateWindow("DDA Line Rotation");
+    glutCreateWindow("DDA Translation");
 
     init();
-
     glutDisplayFunc(display);
 
     glutMainLoop();
-
-    return 0;
 }

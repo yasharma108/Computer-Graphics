@@ -18,12 +18,12 @@ void drawGrid()
 {
     glColor3f(0.8,0.8,0.8);
     glBegin(GL_LINES);
-    for(int i=-500;i<=500;i+=20)
+    for(int i=-50;i<=50;i++)
     {
-        glVertex2f(i,-500);
-        glVertex2f(i,500);
-        glVertex2f(-500,i);
-        glVertex2f(500,i);
+        glVertex2f(i,-50);
+        glVertex2f(i,50);
+        glVertex2f(-50,i);
+        glVertex2f(50,i);
     }
     glEnd();
 }
@@ -32,10 +32,10 @@ void drawAxes()
 {
     glColor3f(0,0,0);
     glBegin(GL_LINES);
-        glVertex2f(-500,0);
-        glVertex2f(500,0);
-        glVertex2f(0,-500);
-        glVertex2f(0,500);
+        glVertex2f(-50,0);
+        glVertex2f(50,0);
+        glVertex2f(0,-50);
+        glVertex2f(0,50);
     glEnd();
 }
 
@@ -52,7 +52,7 @@ void ScanlineFill()
         glVertex2i(x[i],y[i]);
     glEnd();
 
-    int ymin=500, ymax=-500;
+    int ymin=50, ymax=-50;
 
     for(int i=0;i<n;i++)
     {
@@ -91,7 +91,7 @@ void init()
 {
     glClearColor(1,1,1,1);
     glPointSize(2);
-    gluOrtho2D(-500,500,-500,500);
+    gluOrtho2D(-10,10,-10,10);
 }
 
 int main(int argc,char** argv)
@@ -108,7 +108,7 @@ int main(int argc,char** argv)
         scanf("%d %d",&x[i],&y[i]);
     }
 
-    glutInitWindowSize(600,600);
+    glutInitWindowSize(500,500);
     glutCreateWindow("Scanline Polygon Fill");
 
     init();
