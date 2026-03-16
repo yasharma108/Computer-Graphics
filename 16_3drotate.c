@@ -1,32 +1,55 @@
 #include<stdio.h>
 #include<GL/glut.h>
+#include<math.h>
+
+float cube[8][3] = {
+{-2,-2,-2},{2,-2,-2},{2,2,-2},{-2,2,-2},
+{-2,-2,2},{2,-2,2},{2,2,2},{-2,2,2}
+};
 
 float angle;
-int axis;
 
-void drawCube()
+void drawCube(float v[8][3])
 {
-    glutWireCube(2);
+    glBegin(GL_LINE_LOOP);
+    glVertex3fv(v[0]); glVertex3fv(v[1]);
+    glVertex3fv(v[2]); glVertex3fv(v[3]);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glVertex3fv(v[4]); glVertex3fv(v[5]);
+    glVertex3fv(v[6]); glVertex3fv(v[7]);
+    glEnd();
+
+    glBegin(GL_LINES);
+    for(int i=0;i<4;i++)
+    {
+        glVertex3fv(v[i]);
+        glVertex3fv(v[i+4]);
+    }
+    glEnd();
 }
 
 void display()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    float r_cube[8][3];
 
-    glLoadIdentity();
+    float rad = angle * M_PI/180;
 
-    if(axis==1)
-        glRotatef(angle,1,0,0);
+    for(int i=0;i<8;i++)
+    {
+        r_cube[i][0] = cube[i][0]*cos(rad) - cube[i][1]*sin(rad);
+        r_cube[i][1] = cube[i][0]*sin(rad) + cube[i][1]*cos(rad);
+        r_cube[i][2] = cube[i][2];
+    }
 
-    if(axis==2)
-        glRotatef(angle,0,1,0);
+    glClear(GL_COLOR_BUFFER_BIT);
 
-    if(axis==3)
-        glRotatef(angle,0,0,1);
+    glColor3f(1,0,0);
+    drawCube(cube);
 
-    glColor3f(0,0,0);
-
-    drawCube();
+    glColor3f(0,0,1);
+    drawCube(r_cube);
 
     glFlush();
 }
@@ -34,14 +57,7 @@ void display()
 void init()
 {
     glClearColor(1,1,1,1);
-
-    glEnable(GL_DEPTH_TEST);
-
-    glMatrixMode(GL_PROJECTION);
-    gluPerspective(60,1,1,50);
-
-    glMatrixMode(GL_MODELVIEW);
-    glTranslatef(0,0,-10);
+    glOrtho(-10,10,-10,10,-10,10);
 }
 
 int main(int argc,char**argv)
@@ -49,18 +65,13 @@ int main(int argc,char**argv)
     printf("Enter rotation angle: ");
     scanf("%f",&angle);
 
-    printf("1 → X axis\n2 → Y axis\n3 → Z axis\nChoose axis: ");
-    scanf("%d",&axis);
-
     glutInit(&argc,argv);
-    glutInitDisplayMode(GLUT_SINGLE|GLUT_RGB|GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_SINGLE|GLUT_RGB);
     glutInitWindowSize(700,700);
 
     glutCreateWindow("3D Rotation");
 
     init();
-
     glutDisplayFunc(display);
-
     glutMainLoop();
 }

@@ -1,23 +1,52 @@
 #include<stdio.h>
 #include<GL/glut.h>
 
+float cube[8][3] = {
+{-2,-2,-2},{2,-2,-2},{2,2,-2},{-2,2,-2},
+{-2,-2,2},{2,-2,2},{2,2,2},{-2,2,2}
+};
+
 float tx,ty,tz;
 
-void drawCube()
+void drawCube(float v[8][3])
 {
-    glutWireCube(2); // cube of size 2
+    glBegin(GL_LINE_LOOP);
+    glVertex3fv(v[0]); glVertex3fv(v[1]);
+    glVertex3fv(v[2]); glVertex3fv(v[3]);
+    glEnd();
+
+    glBegin(GL_LINE_LOOP);
+    glVertex3fv(v[4]); glVertex3fv(v[5]);
+    glVertex3fv(v[6]); glVertex3fv(v[7]);
+    glEnd();
+
+    glBegin(GL_LINES);
+    for(int i=0;i<4;i++)
+    {
+        glVertex3fv(v[i]);
+        glVertex3fv(v[i+4]);
+    }
+    glEnd();
 }
 
 void display()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    float t_cube[8][3];
 
-    glLoadIdentity();
+    for(int i=0;i<8;i++)
+    {
+        t_cube[i][0] = cube[i][0] + tx;
+        t_cube[i][1] = cube[i][1] + ty;
+        t_cube[i][2] = cube[i][2] + tz;
+    }
 
-    glTranslatef(tx,ty,tz); // translation
+    glClear(GL_COLOR_BUFFER_BIT);
 
     glColor3f(1,0,0);
-    drawCube();
+    drawCube(cube);
+
+    glColor3f(0,0,1);
+    drawCube(t_cube);
 
     glFlush();
 }
@@ -25,30 +54,21 @@ void display()
 void init()
 {
     glClearColor(1,1,1,1);
-
-    glEnable(GL_DEPTH_TEST);
-
-    glMatrixMode(GL_PROJECTION);
-    gluPerspective(60,1,1,50);
-
-    glMatrixMode(GL_MODELVIEW);
-    glTranslatef(0,0,-10);
+    glOrtho(-10,10,-10,10,-10,10);
 }
 
 int main(int argc,char**argv)
 {
-    printf("Enter translation factors tx ty tz: ");
+    printf("Enter tx ty tz: ");
     scanf("%f%f%f",&tx,&ty,&tz);
 
     glutInit(&argc,argv);
-    glutInitDisplayMode(GLUT_SINGLE|GLUT_RGB|GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_SINGLE|GLUT_RGB);
     glutInitWindowSize(700,700);
 
     glutCreateWindow("3D Translation");
 
     init();
-
     glutDisplayFunc(display);
-
     glutMainLoop();
 }

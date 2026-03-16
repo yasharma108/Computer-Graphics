@@ -6,7 +6,8 @@ float cube[8][3] = {
 {-2,-2,2},{2,-2,2},{2,2,2},{-2,2,2}
 };
 
-float sx,sy,sz;
+float sh;
+int choice;
 
 void drawCube(float v[8][3])
 {
@@ -21,11 +22,13 @@ void drawCube(float v[8][3])
     glEnd();
 
     glBegin(GL_LINES);
+
     for(int i=0;i<4;i++)
     {
         glVertex3fv(v[i]);
         glVertex3fv(v[i+4]);
     }
+
     glEnd();
 }
 
@@ -35,9 +38,26 @@ void display()
 
     for(int i=0;i<8;i++)
     {
-        s_cube[i][0] = cube[i][0] * sx;
-        s_cube[i][1] = cube[i][1] * sy;
-        s_cube[i][2] = cube[i][2] * sz;
+        if(choice==1) // X shear
+        {
+            s_cube[i][0]=cube[i][0] + sh*cube[i][1];
+            s_cube[i][1]=cube[i][1];
+            s_cube[i][2]=cube[i][2];
+        }
+
+        if(choice==2) // Y shear
+        {
+            s_cube[i][0]=cube[i][0];
+            s_cube[i][1]=cube[i][1] + sh*cube[i][0];
+            s_cube[i][2]=cube[i][2];
+        }
+
+        if(choice==3) // Z shear
+        {
+            s_cube[i][0]=cube[i][0];
+            s_cube[i][1]=cube[i][1];
+            s_cube[i][2]=cube[i][2] + sh*cube[i][0];
+        }
     }
 
     glClear(GL_COLOR_BUFFER_BIT);
@@ -59,16 +79,25 @@ void init()
 
 int main(int argc,char**argv)
 {
-    printf("Enter sx sy sz: ");
-    scanf("%f%f%f",&sx,&sy,&sz);
+    printf("1 X Shear\n");
+    printf("2 Y Shear\n");
+    printf("3 Z Shear\n");
+    printf("Enter choice: ");
+
+    scanf("%d",&choice);
+
+    printf("Enter shear factor: ");
+    scanf("%f",&sh);
 
     glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_SINGLE|GLUT_RGB);
     glutInitWindowSize(700,700);
 
-    glutCreateWindow("3D Scaling");
+    glutCreateWindow("3D Shearing");
 
     init();
+
     glutDisplayFunc(display);
+
     glutMainLoop();
 }
